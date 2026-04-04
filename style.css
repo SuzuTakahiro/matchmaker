@@ -114,10 +114,38 @@ button:hover {
     cursor: pointer;
 }
 
+/* Collapsible controls */
+.collapsible {
+    overflow: hidden;
+    transition: max-height 0.35s ease, opacity 0.35s ease;
+    max-height: 2000px;
+    opacity: 1;
+}
+
+.collapsible.collapsed {
+    max-height: 0;
+    opacity: 0;
+}
+
+.open-controls {
+    display: inline-block;
+    margin: 0.8em 0;
+    padding: 0.5em 1em;
+    background: #0078d7;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
 /* Responsive: mobile adjustments */
 @media (max-width: 600px) {
     body {
         margin: 1em;
+    }
+
+    h1 {
+        font-size: 1.5em;
     }
 
     input[type="text"],

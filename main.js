@@ -55,7 +55,48 @@ document.getElementById('match-form').addEventListener('submit', function (e) {
     }
     const matchings = generateMatchings(names, rounds);
     displayMatchings(matchings, names);
+    // collapse controls and show open button
+    const controls = document.getElementById('controls');
+    const openBtn = document.getElementById('open-controls');
+    if (controls) controls.classList.add('collapsed');
+    if (openBtn) openBtn.style.display = 'inline-block';
+    // mark that controls have been used at least once
+    window._controlsOpenedOnce = true;
+    // ensure close button is hidden after generation
+    const closeBtn = document.getElementById('close-controls');
+    if (closeBtn) closeBtn.style.display = 'none';
 });
+
+// open-controls button handler: reopen the form for editing/regeneration
+const openBtn = document.getElementById('open-controls');
+if (openBtn) {
+    openBtn.addEventListener('click', function () {
+        const controls = document.getElementById('controls');
+        const closeBtn = document.getElementById('close-controls');
+        if (controls) controls.classList.remove('collapsed');
+        openBtn.style.display = 'none';
+        // if this is not the first open (i.e. used before), show close button
+        if (window._controlsOpenedOnce && closeBtn) {
+            closeBtn.style.display = 'inline-block';
+        }
+        // focus first input
+        const firstInput = document.querySelector('#names-list input');
+        if (firstInput) firstInput.focus();
+        // scroll to top of controls
+        if (controls) controls.scrollIntoView({ behavior: 'smooth' });
+    });
+}
+
+// close-controls button handler: collapse the form again
+const closeBtn = document.getElementById('close-controls');
+if (closeBtn) {
+    closeBtn.addEventListener('click', function () {
+        const controls = document.getElementById('controls');
+        if (controls) controls.classList.add('collapsed');
+        closeBtn.style.display = 'none';
+        if (openBtn) openBtn.style.display = 'inline-block';
+    });
+}
 
 function generateMatchings(names, rounds) {
     let allMatches = [];
