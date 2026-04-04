@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1on1対戦管理アプリ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>交流会用1on1対戦管理アプリ</h1>
+    <form id="match-form">
+        <label>参加者名:<br></label>
+        <div id="names-list"></div>
+        <button type="button" id="add-name">入力枠を追加</button>
+        <label>対戦回数:<br>
+            <input type="number" id="rounds" min="1" value="1">
+        </label><br><br>
+        <button type="submit">マッチング生成</button>
+    </form>
+    <div id="result"></div>
+    <script src="main.js"></script>
+</body>
+
+</html>

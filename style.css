@@ -1,0 +1,115 @@
+body {
+    font-family: sans-serif;
+    margin: 2em;
+    background: #f9f9f9;
+}
+
+h1 {
+    color: #333;
+}
+
+form {
+    background: #fff;
+    padding: 1em;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2em;
+}
+
+input[type="text"],
+input[type="number"] {
+    width: 80%;
+    padding: 0.5em;
+    margin-top: 0.5em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    padding: 0.5em 1.5em;
+    border: none;
+    background: #0078d7;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #005fa3;
+}
+
+#result {
+    background: #fff;
+    padding: 1em;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Match display */
+.round {
+    border-left: 4px solid #0078d7;
+    padding: 0.75em 1em;
+    margin-bottom: 1em;
+    background: linear-gradient(90deg, rgba(0, 120, 215, 0.03), transparent);
+    border-radius: 6px;
+}
+
+.round h3 {
+    margin: 0 0 0.5em 0;
+    font-size: 1.05em;
+    color: #005fa3;
+}
+
+.match-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.match-list li {
+    padding: 0.5em 0.25em;
+    border-bottom: 1px solid #eef4fb;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.match-list li:last-child {
+    border-bottom: none;
+}
+
+.player-name {
+    color: #222;
+    font-weight: 600;
+}
+
+.vs {
+    color: #666;
+    font-weight: 700;
+}
+
+.bye {
+    display: inline-block;
+    background: #fffae6;
+    color: #9a6b00;
+    padding: 0.25em 0.6em;
+    border-radius: 999px;
+    border: 1px solid #ffe58f;
+    font-weight: 700;
+}
+
+/* Input list styling */
+#names-list div input {
+    padding: 0.4em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#names-list div button {
+    padding: 0.35em 0.6em;
+    border: none;
+    background: #e74c3c;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+}
