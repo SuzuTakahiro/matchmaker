@@ -275,6 +275,14 @@ function inlineAllComputedStyles(root) {
             const blc = cs.getPropertyValue('border-left-color');
             if (blw && bls && bls !== 'none') {
                 el.style.borderLeft = `${blw} ${bls} ${blc}`;
+                // add a small horizontal gap around the left border for better spacing in capture
+                try {
+                    const extraPx = 8; // adjust this value to increase/decrease gap
+                    el.style.marginLeft = extraPx + 'px';
+                    el.style.marginRight = extraPx + 'px';
+                } catch (e) {
+                    // ignore padding adjustments if any error occurs
+                }
             } else if (cs.border) {
                 el.style.border = cs.border;
             }
@@ -302,6 +310,13 @@ async function captureResultAsBlob() {
     document.body.appendChild(temp);
     try {
         inlineAllComputedStyles(clone);
+        // add a small horizontal padding to .round elements only for the capture
+        try {
+            const extraPadPx = 16;
+            const styleEl = document.createElement('style');
+            styleEl.textContent = `.round{padding-left:${extraPadPx}px !important; padding-right:${extraPadPx}px !important;}`;
+            clone.insertBefore(styleEl, clone.firstChild);
+        } catch (e) { console.warn('injecting capture padding failed', e); }
         const rect = el.getBoundingClientRect();
         const width = Math.max(Math.ceil(rect.width), 600);
         const height = Math.max(Math.ceil(rect.height), 200);
