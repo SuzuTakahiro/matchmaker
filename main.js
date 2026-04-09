@@ -279,7 +279,7 @@ function inlineAllComputedStyles(root) {
                 try {
                     const extraPx = 8; // adjust this value to increase/decrease gap
                     el.style.marginLeft = extraPx + 'px';
-                    el.style.marginRight = extraPx + 'px';
+                    // el.style.marginRight = extraPx + 'px';
                 } catch (e) {
                     // ignore padding adjustments if any error occurs
                 }
