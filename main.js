@@ -249,4 +249,107 @@ function displayMatchings(matchings, names) {
         roundDiv.appendChild(ul);
         container.appendChild(roundDiv);
     });
+    // show share button when results exist
+    const shareBtn = document.getElementById('share-result');
+    if (shareBtn) shareBtn.style.display = matchings.length ? 'inline-block' : 'none';
 }
+
+// --- Capture #result and share ---
+function inlineAllComputedStyles(root) {
+    const nodes = root.querySelectorAll('*');
+    nodes.forEach(el => {
+        const cs = window.getComputedStyle(el);
+        // copy a subset of properties to avoid exceptions
+        // background: prefer full background (including gradients) when available
+        el.style.background = cs.backgroundColor || cs.background;
+        if (cs.backgroundImage && cs.backgroundImage !== 'none') el.style.backgroundImage = cs.backgroundImage;
+        el.style.backgroundSize = cs.backgroundSize;
+        el.style.color = cs.color;
+        el.style.font = cs.font;
+        el.style.padding = cs.padding;
+        el.style.margin = cs.margin;
+        // ensure border-left and border shorthand are applied when present
+        try {
+            const blw = cs.getPropertyValue('border-left-width');
+            const bls = cs.getPropertyValue('border-left-style');
+            const blc = cs.getPropertyValue('border-left-color');
+            if (blw && bls && bls !== 'none') {
+                el.style.borderLeft = `${blw} ${bls} ${blc}`;
+            } else if (cs.border) {
+                el.style.border = cs.border;
+            }
+        } catch (e) {
+            el.style.border = cs.border;
+        }
+        el.style.borderRadius = cs.borderRadius;
+        if (cs.boxShadow && cs.boxShadow !== 'none') el.style.boxShadow = cs.boxShadow;
+        el.style.boxSizing = cs.boxSizing;
+        el.style.width = cs.width;
+        el.style.height = cs.height;
+        el.style.display = cs.display;
+    });
+    try { root.style.background = window.getComputedStyle(root).backgroundColor; } catch (e) { }
+}
+
+async function captureResultAsBlob() {
+    const el = document.getElementById('result');
+    if (!el) throw new Error('result 要素が見つかりません');
+    const clone = el.cloneNode(true);
+    // place clone offscreen so computed styles apply
+    const temp = document.createElement('div');
+    temp.style.position = 'fixed'; temp.style.left = '-10000px'; temp.style.top = '0';
+    temp.appendChild(clone);
+    document.body.appendChild(temp);
+    try {
+        inlineAllComputedStyles(clone);
+        const rect = el.getBoundingClientRect();
+        const width = Math.max(Math.ceil(rect.width), 600);
+        const height = Math.max(Math.ceil(rect.height), 200);
+        // serialize clone as XHTML inside a namespaced wrapper
+        const inner = '<div xmlns="http://www.w3.org/1999/xhtml">' + clone.innerHTML + '</div>';
+        const svg = '<?xml version="1.0" encoding="utf-8"?>\n' +
+            `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+            `<foreignObject width="100%" height="100%">` +
+            inner +
+            `</foreignObject></svg>`;
+
+        const svgDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+        const img = new Image();
+        img.src = svgDataUrl;
+        await new Promise((res, rej) => { img.onload = res; img.onerror = e => rej(new Error('SVG読み込みエラー')); });
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+
+
+        return await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    } finally {
+        document.body.removeChild(temp);
+    }
+}
+
+async function shareResult() {
+    try {
+        const blob = await captureResultAsBlob();
+        if (!blob) throw new Error('画像生成に失敗しました');
+        const file = new File([blob], 'match-result.png', { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: 'マッチング結果', text: 'マッチング結果を共有します' });
+            return;
+        }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'match-result.png'; document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
+        const tweetText = encodeURIComponent('マッチング結果です。画像を添付して投稿してください。');
+        const intent = `https://twitter.com/intent/tweet?text=${tweetText}`;
+        window.open(intent, '_blank');
+    } catch (err) {
+        alert('共有に失敗しました: ' + err.message);
+    }
+}
+
+const shareBtnEl = document.getElementById('share-result');
+if (shareBtnEl) shareBtnEl.addEventListener('click', shareResult);
