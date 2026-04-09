@@ -266,8 +266,19 @@ function inlineAllComputedStyles(root) {
         el.style.backgroundSize = cs.backgroundSize;
         el.style.color = cs.color;
         el.style.font = cs.font;
-        el.style.padding = cs.padding;
+        // copy padding per-side to avoid losing spacing
+        el.style.paddingTop = cs.getPropertyValue('padding-top');
+        el.style.paddingRight = cs.getPropertyValue('padding-right');
+        el.style.paddingBottom = cs.getPropertyValue('padding-bottom');
+        el.style.paddingLeft = cs.getPropertyValue('padding-left');
         el.style.margin = cs.margin;
+        // preserve white-space and text overflow behaviour
+        const ws = cs.getPropertyValue('white-space') || cs.whiteSpace;
+        if (ws) el.style.whiteSpace = ws;
+        const to = cs.getPropertyValue('text-overflow') || cs.textOverflow;
+        if (to && to !== 'clip') el.style.textOverflow = to;
+        const ov = cs.getPropertyValue('overflow') || cs.overflow;
+        if (ov) el.style.overflow = ov;
         // ensure border-left and border shorthand are applied when present
         try {
             const blw = cs.getPropertyValue('border-left-width');
@@ -279,7 +290,6 @@ function inlineAllComputedStyles(root) {
                 try {
                     const extraPx = 8; // adjust this value to increase/decrease gap
                     el.style.marginLeft = extraPx + 'px';
-                    // el.style.marginRight = extraPx + 'px';
                 } catch (e) {
                     // ignore padding adjustments if any error occurs
                 }
@@ -291,6 +301,16 @@ function inlineAllComputedStyles(root) {
         }
         el.style.borderRadius = cs.borderRadius;
         if (cs.boxShadow && cs.boxShadow !== 'none') el.style.boxShadow = cs.boxShadow;
+        // if this is the bye badge, force nowrap and prevent shrinking in capture
+        try {
+            if (el.classList && el.classList.contains('bye')) {
+                el.style.whiteSpace = 'nowrap';
+                el.style.flex = '0 0 auto';
+                el.style.minWidth = '0';
+                // ensure padding and display are preserved
+                if (!el.style.display) el.style.display = cs.display || 'inline-block';
+            }
+        } catch (e) { }
         el.style.boxSizing = cs.boxSizing;
         el.style.width = cs.width;
         el.style.height = cs.height;
