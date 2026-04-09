@@ -138,6 +138,7 @@ button:hover {
     cursor: pointer;
 }
 
+
 /* Responsive: mobile adjustments */
 @media (max-width: 600px) {
     body {
