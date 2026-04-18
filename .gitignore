@@ -1,0 +1,8 @@
+# dependencies
+/node_modules
+/.pnp
+/.next
+.pnp.js
+.github/prompts
+.github/skills
+/openspec
